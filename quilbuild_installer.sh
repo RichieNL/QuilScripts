@@ -87,8 +87,10 @@ if [ -f "$SH_FILE" ]; then
         echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
         sudo chmod +x "$SH_FILE"
         echo "$SH_FILE is bijgewerkt en uitvoerbaar gemaakt."
+        echo -e "${RED}ga naar de /Root folder en voer het script ./quilbuild.sh uit${NC}"
     else
         echo "$SH_FILE is al up-to-date."
+        echo -e "${RED}ga naar de /Root folder en voer het script ./quilbuild.sh uit${NC}"
     fi
 else
     echo "Het bestand $SH_FILE wordt aangemaakt..."

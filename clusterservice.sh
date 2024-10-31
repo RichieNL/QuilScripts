@@ -3,7 +3,7 @@
 # Path to the cluster service file
 SERVICE_FILE="/etc/systemd/system/cluster.service"
 
-# Desired configuration (excluding ExecStart to handle specific case)
+# Desired configuration without the ExecStart line to handle specific cases
 read -r -d '' DESIRED_CONFIG << EOL
 [Unit]
 Description=Cluster Start Script Monitoring All Worker Processes
@@ -32,21 +32,18 @@ DESIRED_EXECSTART="ExecStart=/usr/local/bin/cluster_start.sh worker 257 1"
 if [ -f "$SERVICE_FILE" ]; then
     echo "Service file $SERVICE_FILE already exists. Checking for differences..."
 
-    # Read the current ExecStart line
-    CURRENT_EXECSTART=$(grep "^ExecStart=" "$SERVICE_FILE")
-
-    # Determine if ExecStart should be updated
-    if [[ "$CURRENT_EXECSTART" != "$DESIRED_EXECSTART" && "$CURRENT_EXECSTART" != *"master"* ]]; then
+    # Check if ExecStart line contains 'master'
+    if grep -q "ExecStart=.*master" "$SERVICE_FILE"; then
+        echo "Skipping ExecStart update (contains 'master')."
+    else
         echo "Updating ExecStart to worker mode..."
         sudo sed -i "s|^ExecStart=.*|$DESIRED_EXECSTART|" "$SERVICE_FILE"
-    else
-        echo "Skipping ExecStart update (contains 'master')."
     fi
 
-    # Update other settings if they differ
+    # Ensure the rest of the configuration matches
     sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 $DESIRED_CONFIG
-$CURRENT_EXECSTART
+$(grep "^ExecStart=" "$SERVICE_FILE")
 EOL
 
     echo "Service file updated to match the desired configuration."

@@ -13,10 +13,6 @@ else
     echo "Directory $target_dir already exists."
 fi
 
-# Prompt the user to input the SSH port
-read -p "Enter the SSH port you wish to allow (default is 22): " ssh_port
-ssh_port=${ssh_port:-22}  # Default to 22 if no input is provided
-
 # Define the UFW configuration script content with dynamic SSH port
 script_content='#!/bin/bash
 
@@ -39,6 +35,10 @@ display_rules() {
 backup_path="/etc/ufw/ufw.rules.bak"
 echo "Backing up current UFW rules to $backup_path..."
 sudo ufw status > $backup_path
+
+# Prompt the user to input the SSH port
+read -p "Enter the SSH port you wish to allow (default is 22): " ssh_port
+ssh_port=${ssh_port:-22}  # Default to 22 if no input is provided
 
 # Prompt for IP address to allow specific access
 read -p "Enter the IPv4 address you wish to allow for the port range 40000:40256: " ip_address

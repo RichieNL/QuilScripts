@@ -29,23 +29,25 @@ while true; do
     case $choice in
         1)
             echo "Firewall configureren voor Cluster Richard..."
-            # Plaats hier de configuratiecommando's voor Cluster Richard
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh?token=GHSAT0AAAAAACZWFSUZNIBGOYXZDNFRBVGCZZDSA7A | bash
             ;;
         2)
             echo "Firewall configureren voor Cluster Kevin..."
-            # Plaats hier de configuratiecommando's voor Cluster Kevin
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigureKevin.sh?token=GHSAT0AAAAAACZWFSUZCVFV6IZMIDHP6JB6ZZDSBVQ | bash
             ;;
         3)
             echo "Cluster Service voor Worker aanmaken/controleren..."
-            # Plaats hier de service-aanmaak- of controlecommando's voor de Worker
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/clusterservice.sh?token=GHSAT0AAAAAACZWFSUYT7S4SUUWZBG644GMZZDSCGA | bash
             ;;
         4)
             echo "Cluster Service status bekijken..."
-            # Plaats hier de statuscontrolecommando's voor de Cluster Service
+            sudo journalctl -u cluster.service -f --no-hostname -o cat
             ;;
         5)
             echo "Token saldo bekijken..."
-            # Plaats hier de commando's om het tokensaldo te bekijken
+            cd /root/ceremonyclient/node || { echo "Fout bij het wijzigen van directory."; exit 1; }
+            # Voer het commando uit en geef de output weer
+            ./node-2.0.2.3-linux-amd64 --node-info
             ;;
         6)
             echo "Afsluiten..."

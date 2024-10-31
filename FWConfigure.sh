@@ -36,10 +36,11 @@ for port in "${ports[@]}"; do
     sudo ufw allow $port/udp
 done
 
-# Open port range 40000:40256 for a specific IP on both TCP and UDP
-echo "Allowing port range 40000:40256 for IP 185.202.173.179 on TCP and UDP..."
-sudo ufw allow from 185.202.173.179 to any port 40000:40256 proto tcp
-sudo ufw allow from 185.202.173.179 to any port 40000:40256 proto udp
+# Open port range 40000:40256 for the specific IP on both TCP and UDP
+ip_address="185.202.173.179"
+echo "Allowing port range 40000:40256 for IP $ip_address on TCP and UDP..."
+sudo ufw allow from $ip_address to any port 40000:40256 proto tcp
+sudo ufw allow from $ip_address to any port 40000:40256 proto udp
 
 # Reload UFW to apply changes
 echo "Reloading UFW..."

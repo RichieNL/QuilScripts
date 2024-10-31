@@ -78,4 +78,46 @@ cd /root/ceremonyclient/node/
 # Capture the parent process ID (PPID) inside the script
 parent_process_id=$PPID
 
-# Get the role (master
+# Get the role (master/worker), number of processes, and starting core from user input
+role=$1
+process_count=$2
+start_core=$3
+
+# Log the parent process ID for verification
+echo "Parent Process ID: $parent_process_id"
+
+# If the role is 'master', start the master process without the --core flag
+if [ "$role" == "master" ]; then
+    ./node-2.0.2.3-linux-amd64 &
+    echo "Master process started without --core, with parent process ID $parent_process_id."
+    sleep 2
+fi
+
+# Start worker processes, passing the captured parent process ID
+for ((i=start_core; i<start_core+process_count; i++)); do
+    ./node-1.4.21.1-linux-amd64 --core $i -parent-process $parent_process_id &
+    echo "Started worker process on core $i with parent process ID $parent_process_id"
+done
+
+# Wait for all background processes to complete
+wait
+EOL
+
+# Check if the cluster_start.sh file exists and matches the desired content
+if [ -f "$START_SCRIPT" ]; then
+    # Compare current file content with desired content
+    if ! diff <(echo "$START_SCRIPT_CONTENT") "$START_SCRIPT" &> /dev/null; then
+        echo "Updating $START_SCRIPT to match the desired configuration..."
+        echo "$START_SCRIPT_CONTENT" | sudo tee "$START_SCRIPT" > /dev/null
+        sudo chmod +x "$START_SCRIPT"
+        echo "$START_SCRIPT has been updated and made executable."
+    else
+        echo "$START_SCRIPT already exists and is up to date."
+    fi
+else
+    # Create the cluster_start.sh file with the desired content
+    echo "Creating $START_SCRIPT..."
+    echo "$START_SCRIPT_CONTENT" | sudo tee "$START_SCRIPT" > /dev/null
+    sudo chmod +x "$START_SCRIPT"
+    echo "$START_SCRIPT created and made executable."
+fi

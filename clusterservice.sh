@@ -3,7 +3,7 @@
 # Path to the cluster service file
 SERVICE_FILE="/etc/systemd/system/cluster.service"
 
-# Desired configuration without the ExecStart line to handle specific cases
+# Desired configuration with placeholders for ExecStart
 read -r -d '' DESIRED_CONFIG << EOL
 [Unit]
 Description=Cluster Start Script Monitoring All Worker Processes
@@ -20,6 +20,7 @@ RestartKillSignal=SIGINT
 FinalKillSignal=SIGKILL
 TimeoutStopSec=30s
 User=root
+ExecStart=PLACEHOLDER_EXECSTART
 
 [Install]
 WantedBy=multi-user.target
@@ -32,39 +33,32 @@ DESIRED_EXECSTART="ExecStart=/usr/local/bin/cluster_start.sh worker 257 1"
 if [ -f "$SERVICE_FILE" ]; then
     echo "Service file $SERVICE_FILE already exists. Checking for differences..."
 
-    # Remove any existing ExecStart line (to ensure no duplicate or misplaced entries)
-    sudo sed -i '/^ExecStart=/d' "$SERVICE_FILE"
-
-    # Check if the original ExecStart line had 'master' (skip modifying if 'master' was set)
+    # Check if ExecStart contains 'master', skip updating if it does
     if grep -q "ExecStart=.*master" "$SERVICE_FILE"; then
         echo "Skipping ExecStart update (contains 'master')."
-        CURRENT_EXECSTART="ExecStart=$(grep 'ExecStart=' "$SERVICE_FILE")"
+        CURRENT_EXECSTART=$(grep "^ExecStart=" "$SERVICE_FILE")
     else
         CURRENT_EXECSTART="$DESIRED_EXECSTART"
+        echo "Updating ExecStart to worker mode."
     fi
 
-    # Write the updated configuration, including the correct ExecStart line in the [Service] section
-    sudo tee "$SERVICE_FILE" > /dev/null << EOL
-$DESIRED_CONFIG
+    # Replace the placeholder with the correct ExecStart command
+    UPDATED_CONFIG="${DESIRED_CONFIG/PLACEHOLDER_EXECSTART/$CURRENT_EXECSTART}"
 
-[Service]
-$CURRENT_EXECSTART
-EOL
-
+    # Write the updated configuration to the service file
+    echo "$UPDATED_CONFIG" | sudo tee "$SERVICE_FILE" > /dev/null
     echo "Service file updated to match the desired configuration."
 else
     echo "Service file $SERVICE_FILE does not exist. Creating it..."
 
-    # Create the service file with the specified configuration
-    sudo tee "$SERVICE_FILE" > /dev/null << EOL
-$DESIRED_CONFIG
-$DESIRED_EXECSTART
-EOL
+    # Replace the placeholder with the desired ExecStart command and write the file
+    UPDATED_CONFIG="${DESIRED_CONFIG/PLACEHOLDER_EXECSTART/$DESIRED_EXECSTART}"
+    echo "$UPDATED_CONFIG" | sudo tee "$SERVICE_FILE" > /dev/null
 
     echo "Service file created successfully at $SERVICE_FILE."
 fi
 
-# Reload the systemd manager configuration to recognize any changes
+# Reload systemd manager configuration to recognize any changes
 sudo systemctl daemon-reload
 
 # Enable the service to start on boot but do not start it immediately

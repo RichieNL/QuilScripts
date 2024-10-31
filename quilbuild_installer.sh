@@ -1,79 +1,77 @@
 #!/bin/bash
 
-# Specify the path and filename for the .sh file
+# Specificeer het pad en de bestandsnaam voor het .sh-bestand
 SH_FILE="/root/quilbuild.sh"
 
-# Desired content for the .sh file
+# Gewenste inhoud voor het .sh-bestand
 read -r -d '' SH_FILE_CONTENT << 'EOL'
 #!/bin/bash
 
-# Function to display the menu
+# Functie om het menu weer te geven
 display_menu() {
-    echo "Choose an option:"
+    echo "Kies een optie:"
     echo "1. Firewall configureren voor Cluster Richard"
     echo "2. Firewall configureren voor Cluster Kevin"
     echo "3. Cluster Service voor Worker aanmaken/controleren"
     echo "4. Cluster Service status bekijken"
-    echo "5. Token saldo Bekijken"
-    echo "6. Exit"
+    echo "5. Token saldo bekijken"
+    echo "6. Afsluiten"
 }
 
-# Main loop to keep the menu running
+# Hoofdloop om het menu actief te houden
 while true; do
     display_menu
 
-    # Read user choice
-    read -p "Enter your choice [1-6]: " choice
+    # Lees de keuze van de gebruiker
+    read -p "Voer je keuze in [1-6]: " choice
 
-    # Handle the user choice
+    # Behandel de keuze van de gebruiker
     case $choice in
         1)
-            echo "Downloading Cluster Package..."
-            # Replace the URL with the actual link you want to download
-            wget -O /root/cluster-package.tar.gz http://example.com/cluster-package.tar.gz
-            echo "Download completed and saved to /root/cluster-package.tar.gz"
-            
-            # Ask if the user wants to return to the menu
-            read -p "Do you want to return to the menu? (y/n): " return_choice
-            if [[ "$return_choice" != "y" && "$return_choice" != "Y" ]]; then
-                echo "Exiting..."
-                exit 0
-            fi
+            echo "Firewall configureren voor Cluster Richard..."
+            # Plaats hier de configuratiecommando's voor Cluster Richard
             ;;
         2)
-            echo "Configuring Firewall for Cluster Kevin..."
-            # Place your firewall configuration commands here for Cluster Kevin
+            echo "Firewall configureren voor Cluster Kevin..."
+            # Plaats hier de configuratiecommando's voor Cluster Kevin
             ;;
         3)
-            echo "Creating/Checking Cluster Service for Worker..."
-            # Place your service creation/check commands here for Worker
+            echo "Cluster Service voor Worker aanmaken/controleren..."
+            # Plaats hier de service-aanmaak- of controlecommando's voor de Worker
             ;;
         4)
-            echo "Viewing Cluster Service Status..."
-            # Place your cluster service status check commands here
+            echo "Cluster Service status bekijken..."
+            # Plaats hier de statuscontrolecommando's voor de Cluster Service
             ;;
         5)
-            echo "Viewing Token Balance..."
-            # Place your token balance view commands here
+            echo "Token saldo bekijken..."
+            # Plaats hier de commando's om het tokensaldo te bekijken
             ;;
         6)
-            echo "Exiting..."
+            echo "Afsluiten..."
             exit 0
             ;;
         *)
-            echo "Invalid choice. Please select a number between 1 and 6."
+            echo "Ongeldige keuze. Kies een nummer tussen 1 en 6."
             ;;
     esac
+
+    # Vraag de gebruiker of hij terug naar het menu wil, behalve bij keuze 6
+    read -p "Wil je terug naar het menu? (y/n): " return_choice
+    if [[ "$return_choice" != "y" && "$return_choice" != "Y" ]]; then
+        echo "Afsluiten..."
+        exit 0
+    fi
 done
 EOL
 
-# Create the .sh file with the specified content
+# Maak het .sh-bestand met de gespecificeerde inhoud
 if [ ! -f "$SH_FILE" ]; then
-    echo "Creating $SH_FILE..."
+    echo "Het bestand $SH_FILE wordt aangemaakt..."
     echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
-    # Make the script executable
+    # Maak het script uitvoerbaar
     sudo chmod +x "$SH_FILE"
-    echo "$SH_FILE has been created and made executable."
+    echo "$SH_FILE is aangemaakt en uitvoerbaar gemaakt."
 else
-    echo "$SH_FILE already exists."
+    echo "$SH_FILE bestaat al."
 fi

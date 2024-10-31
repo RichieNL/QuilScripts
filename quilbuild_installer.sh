@@ -7,12 +7,17 @@ SH_FILE="/root/quilbuild.sh"
 read -r -d '' SH_FILE_CONTENT << 'EOL'
 #!/bin/bash
 
+# Definiëren van kleuren
+RED='\033[0;31m'    # Rood
+YELLOW='\033[1;33m' # Geel
+NC='\033[0m'        # Geen kleur (reset)
+
 # Functie om het menu weer te geven
 display_menu() {
-    echo "Speciaal voor Kevin het cluster config voor dummies"
-    echo "voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is"
-    echo "het configureren van de master moet handmatig."
-    echo "na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden"
+    echo "${YELLOW}Speciaal voor Kevin het cluster config voor dummies${NC}"
+    echo "${RED}voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is${NC}"
+    echo "${RED}het configureren van de master moet handmatig.${NC}"
+    echo "${RED}na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden${NC}"
     echo "Kies een optie:"
     echo "1. Firewall configureren voor Cluster Richard"
     echo "2. Firewall configureren voor Cluster Kevin"
@@ -24,6 +29,7 @@ display_menu() {
 
 # Hoofdloop om het menu actief te houden
 while true; do
+    clear
     display_menu
 
     # Lees de keuze van de gebruiker

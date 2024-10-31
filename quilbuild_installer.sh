@@ -9,6 +9,10 @@ read -r -d '' SH_FILE_CONTENT << 'EOL'
 
 # Functie om het menu weer te geven
 display_menu() {
+    echo "Speciaal voor Kevin het cluster config voor dummies"
+    echo "voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is"
+    echo "het configureren van de master moet handmatig."
+    echo "na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden"
     echo "Kies een optie:"
     echo "1. Firewall configureren voor Cluster Richard"
     echo "2. Firewall configureren voor Cluster Kevin"
@@ -45,9 +49,9 @@ while true; do
             ;;
         5)
             echo "Token saldo bekijken..."
-            cd /root/ceremonyclient/node || { echo "Fout bij het wijzigen van directory."; exit 1; }
+            cd /root/ceremonyclient/client || { echo "Fout bij het wijzigen van directory."; exit 1; }
             # Voer het commando uit en geef de output weer
-            ./node-2.0.2.3-linux-amd64 --node-info
+            ./qclient-2.0.2.3-linux-amd64 token balance --config /root/ceremonyclient/node/.config
             ;;
         6)
             echo "Afsluiten..."
@@ -67,13 +71,21 @@ while true; do
 done
 EOL
 
-# Maak het .sh-bestand met de gespecificeerde inhoud
-if [ ! -f "$SH_FILE" ]; then
+# Controleer of het bestand al bestaat en of de inhoud overeenkomt
+if [ -f "$SH_FILE" ]; then
+    echo "$SH_FILE bestaat al. Controleren op overeenkomsten..."
+    # Vergelijk de huidige inhoud met de gewenste inhoud
+    if ! diff <(echo "$SH_FILE_CONTENT") "$SH_FILE" &> /dev/null; then
+        echo "Inhoud komt niet overeen. Het bestand wordt bijgewerkt..."
+        echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
+        sudo chmod +x "$SH_FILE"
+        echo "$SH_FILE is bijgewerkt en uitvoerbaar gemaakt."
+    else
+        echo "$SH_FILE is al up-to-date."
+    fi
+else
     echo "Het bestand $SH_FILE wordt aangemaakt..."
     echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
-    # Maak het script uitvoerbaar
     sudo chmod +x "$SH_FILE"
     echo "$SH_FILE is aangemaakt en uitvoerbaar gemaakt."
-else
-    echo "$SH_FILE bestaat al."
 fi

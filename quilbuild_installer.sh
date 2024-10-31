@@ -14,10 +14,10 @@ NC='\033[0m'        # Geen kleur (reset)
 
 # Functie om het menu weer te geven
 display_menu() {
-    echo "${YELLOW}Speciaal voor Kevin het cluster config voor dummies${NC}"
-    echo "${RED}voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is${NC}"
-    echo "${RED}het configureren van de master moet handmatig.${NC}"
-    echo "${RED}na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden${NC}"
+    echo -e "${YELLOW}Speciaal voor Kevin het cluster config voor dummies${NC}"
+    echo -e "${RED}voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is${NC}"
+    echo -e "${RED}het configureren van de master moet handmatig.${NC}"
+    echo -e "${RED}na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden${NC}"
     echo "Kies een optie:"
     echo "1. Firewall configureren voor Cluster Richard"
     echo "2. Firewall configureren voor Cluster Kevin"

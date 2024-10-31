@@ -35,15 +35,16 @@ if [ -f "$SERVICE_FILE" ]; then
     # Check if ExecStart line contains 'master'
     if grep -q "ExecStart=.*master" "$SERVICE_FILE"; then
         echo "Skipping ExecStart update (contains 'master')."
+        CURRENT_EXECSTART=$(grep "^ExecStart=" "$SERVICE_FILE")
     else
         echo "Updating ExecStart to worker mode..."
-        sudo sed -i "s|^ExecStart=.*|$DESIRED_EXECSTART|" "$SERVICE_FILE"
+        CURRENT_EXECSTART="$DESIRED_EXECSTART"
     fi
 
-    # Ensure the rest of the configuration matches
+    # Write the updated configuration, including the correct ExecStart line
     sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 $DESIRED_CONFIG
-$(grep "^ExecStart=" "$SERVICE_FILE")
+$CURRENT_EXECSTART
 EOL
 
     echo "Service file updated to match the desired configuration."
@@ -51,18 +52,4 @@ else
     echo "Service file $SERVICE_FILE does not exist. Creating it..."
 
     # Create the service file with the specified configuration
-    sudo tee "$SERVICE_FILE" > /dev/null <<EOL
-$DESIRED_CONFIG
-$DESIRED_EXECSTART
-EOL
-
-    echo "Service file created successfully at $SERVICE_FILE."
-fi
-
-# Reload the systemd manager configuration to recognize any changes
-sudo systemctl daemon-reload
-
-# Enable the service to start on boot but do not start it immediately
-sudo systemctl enable cluster.service
-
-echo "Cluster service configuration completed and enabled, but not started."
+    sudo tee "$SERVICE_FILE" > /dev/null <<

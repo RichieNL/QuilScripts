@@ -42,7 +42,7 @@ while true; do
             wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
 
             # Navigate to the directory and run the downloaded script
-            cd /root/ceremonyclient
+            cd /root/QuilScripts
             ./ConfigureFW.sh
 fi
             ;;

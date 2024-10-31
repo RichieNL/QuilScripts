@@ -95,4 +95,5 @@ else
     echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
     sudo chmod +x "$SH_FILE"
     echo "$SH_FILE is aangemaakt en uitvoerbaar gemaakt."
+    echo -e "${RED}ga naar de /Root folder en voer het script ./quilbuild.sh uit${NC}"
 fi

@@ -15,16 +15,14 @@ NC='\033[0m'        # Geen kleur (reset)
 # Functie om het menu weer te geven
 display_menu() {
     echo -e "${YELLOW}Speciaal voor Kevin het cluster config voor dummies${NC}"
-    echo -e "${RED}voor zowel Kevin Als Richard ga ik er vanuit dat de huidige HM01 de Master is${NC}"
     echo -e "${RED}het configureren van de master moet handmatig.${NC}"
     echo -e "${RED}na het configureren moet handmatig nog het config.yml en keys.yml bestand op elke server geplaatst worden${NC}"
     echo "Kies een optie:"
-    echo "1. Firewall configureren voor Cluster Richard"
-    echo "2. Firewall configureren voor Cluster Kevin"
-    echo "3. Cluster Service voor Worker aanmaken/controleren"
-    echo "4. Cluster Service status bekijken"
-    echo "5. Token saldo bekijken"
-    echo "6. Afsluiten"
+    echo "1. Firewall configureren voor Cluster"
+    echo "2. Cluster Service voor Worker aanmaken/controleren"
+    echo "3. Cluster Service status bekijken"
+    echo "4. Token saldo bekijken"
+    echo "5. Afsluiten"
 }
 
 # Hoofdloop om het menu actief te houden
@@ -42,24 +40,20 @@ while true; do
             wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh?token=GHSAT0AAAAAACZWFSUZNIBGOYXZDNFRBVGCZZDSA7A | bash
             ;;
         2)
-            echo "Firewall configureren voor Cluster Kevin..."
-            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigureKevin.sh?token=GHSAT0AAAAAACZWFSUZCVFV6IZMIDHP6JB6ZZDSBVQ | bash
-            ;;
-        3)
             echo "Cluster Service voor Worker aanmaken/controleren..."
             wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/clusterservice.sh?token=GHSAT0AAAAAACZWFSUYT7S4SUUWZBG644GMZZDSCGA | bash
             ;;
-        4)
+        3)
             echo "Cluster Service status bekijken..."
             sudo journalctl -u cluster.service -f --no-hostname -o cat
             ;;
-        5)
+        4)
             echo "Token saldo bekijken..."
             cd /root/ceremonyclient/client || { echo "Fout bij het wijzigen van directory."; exit 1; }
             # Voer het commando uit en geef de output weer
             ./qclient-2.0.2.3-linux-amd64 token balance --config /root/ceremonyclient/node/.config
             ;;
-        6)
+        5)
             echo "Afsluiten..."
             exit 0
             ;;

@@ -44,7 +44,6 @@ while true; do
             # Navigate to the directory and run the downloaded script
             cd /root/QuilScripts
             ./ConfigureFW.sh
-fi
             ;;
         2)
             echo "Cluster Service voor Worker aanmaken/controleren..."

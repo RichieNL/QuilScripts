@@ -42,7 +42,6 @@ while true; do
 else
     wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
 fi
-
             ;;
         2)
             echo "Cluster Service voor Worker aanmaken/controleren..."

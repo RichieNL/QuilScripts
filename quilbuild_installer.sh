@@ -77,6 +77,10 @@ fi
     fi
 done
 EOL
+# Definiëren van kleuren
+RED='\033[0;31m'    # Rood
+YELLOW='\033[1;33m' # Geel
+NC='\033[0m'        # Geen kleur (reset)
 
 # Controleer of het bestand al bestaat en of de inhoud overeenkomt
 if [ -f "$SH_FILE" ]; then
@@ -93,6 +97,7 @@ if [ -f "$SH_FILE" ]; then
         echo -e "${RED}ga naar de /Root folder en voer het script ./quilbuild.sh uit${NC}"
     fi
 else
+
     echo "Het bestand $SH_FILE wordt aangemaakt..."
     echo "$SH_FILE_CONTENT" | sudo tee "$SH_FILE" > /dev/null
     sudo chmod +x "$SH_FILE"

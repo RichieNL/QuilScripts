@@ -36,8 +36,13 @@ while true; do
     # Behandel de keuze van de gebruiker
     case $choice in
         1)
-            echo "Firewall configureren voor Cluster Richard..."
-            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
+            echo "Firewall configureren voor Cluster..."
+            if [ -f /root/QuilScripts/ConfigureFW.sh ]; then
+    bash /root/QuilScripts/ConfigureFW.sh
+else
+    wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
+fi
+
             ;;
         2)
             echo "Cluster Service voor Worker aanmaken/controleren..."

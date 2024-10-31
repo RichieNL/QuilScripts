@@ -32,18 +32,22 @@ DESIRED_EXECSTART="ExecStart=/usr/local/bin/cluster_start.sh worker 257 1"
 if [ -f "$SERVICE_FILE" ]; then
     echo "Service file $SERVICE_FILE already exists. Checking for differences..."
 
-    # Check if ExecStart line contains 'master'
+    # Remove any existing ExecStart line (to ensure no duplicate or misplaced entries)
+    sudo sed -i '/^ExecStart=/d' "$SERVICE_FILE"
+
+    # Check if the original ExecStart line had 'master' (skip modifying if 'master' was set)
     if grep -q "ExecStart=.*master" "$SERVICE_FILE"; then
         echo "Skipping ExecStart update (contains 'master')."
-        CURRENT_EXECSTART=$(grep "^ExecStart=" "$SERVICE_FILE")
+        CURRENT_EXECSTART="ExecStart=$(grep 'ExecStart=' "$SERVICE_FILE")"
     else
-        echo "Updating ExecStart to worker mode..."
         CURRENT_EXECSTART="$DESIRED_EXECSTART"
     fi
 
-    # Write the updated configuration, including the correct ExecStart line
+    # Write the updated configuration, including the correct ExecStart line in the [Service] section
     sudo tee "$SERVICE_FILE" > /dev/null << EOL
 $DESIRED_CONFIG
+
+[Service]
 $CURRENT_EXECSTART
 EOL
 

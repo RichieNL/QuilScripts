@@ -30,16 +30,16 @@ done
 # Define the ports to open for both TCP and UDP
 declare -a ports=("8336" "8316" "8317" "1419")
 
-# Open specified ports for both TCP and UDP
+# Open specified ports for both TCP and UDP for IPv4 only
 for port in "${ports[@]}"; do
-    echo "Allowing TCP and UDP on port $port..."
-    sudo ufw allow $port/tcp
-    sudo ufw allow $port/udp
+    echo "Allowing TCP and UDP on port $port for IPv4 only..."
+    sudo ufw allow $port/tcp comment 'Allow TCP on IPv4 only'
+    sudo ufw allow $port/udp comment 'Allow UDP on IPv4 only'
 done
 
-# Open port range 40000:40256 for the specific IP on both TCP and UDP
+# Open port range 40000:40256 for a specific IPv4 address on both TCP and UDP
 ip_address="185.202.173.179"
-echo "Allowing port range 40000:40256 for IP $ip_address on TCP and UDP..."
+echo "Allowing port range 40000:40256 for IPv4 address $ip_address on TCP and UDP..."
 sudo ufw allow from $ip_address to any port 40000:40256 proto tcp
 sudo ufw allow from $ip_address to any port 40000:40256 proto udp
 

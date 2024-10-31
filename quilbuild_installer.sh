@@ -31,7 +31,7 @@ while true; do
     display_menu
 
     # Lees de keuze van de gebruiker
-    read -p "Voer je keuze in [1-6]: " choice
+    read -p "Voer je keuze in [1-5]: " choice
 
     # Behandel de keuze van de gebruiker
     case $choice in

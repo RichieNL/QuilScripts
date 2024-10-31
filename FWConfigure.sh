@@ -8,15 +8,6 @@ if ! sudo ufw status | grep -q "Status: active"; then
     sudo ufw enable
 fi
 
-# Prompt for IP address input
-read -p "Enter the IP address to allow access to ports 40000-40256: " ip_address
-
-# Validate the IP address format
-if [[ ! $ip_address =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
-    echo "Invalid IP address format. Please enter a valid IP."
-    exit 1
-fi
-
 # Function to display current UFW rules
 display_rules() {
     echo "Current UFW Rules:"
@@ -45,10 +36,10 @@ for port in "${ports[@]}"; do
     sudo ufw allow $port/udp
 done
 
-# Open port range 40000:40256 for the specified IP on both TCP and UDP
-echo "Allowing port range 40000:40256 for IP $ip_address on TCP and UDP..."
-sudo ufw allow from $ip_address to any port 40000:40256 proto tcp
-sudo ufw allow from $ip_address to any port 40000:40256 proto udp
+# Open port range 40000:40256 for a specific IP on both TCP and UDP
+echo "Allowing port range 40000:40256 for IP 185.202.173.179 on TCP and UDP..."
+sudo ufw allow from 185.202.173.179 to any port 40000:40256 proto tcp
+sudo ufw allow from 185.202.173.179 to any port 40000:40256 proto udp
 
 # Reload UFW to apply changes
 echo "Reloading UFW..."

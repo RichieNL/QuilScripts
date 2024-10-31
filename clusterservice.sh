@@ -2,8 +2,10 @@
 
 # Path to the cluster service file
 SERVICE_FILE="/etc/systemd/system/cluster.service"
+# Path to the cluster start script
+START_SCRIPT="/usr/local/bin/cluster_start.sh"
 
-# Desired configuration with placeholders for ExecStart
+# Desired configuration for cluster.service
 read -r -d '' DESIRED_CONFIG << EOL
 [Unit]
 Description=Cluster Start Script Monitoring All Worker Processes
@@ -27,7 +29,7 @@ WantedBy=multi-user.target
 EOL
 
 # Desired ExecStart command
-DESIRED_EXECSTART="ExecStart=/usr/local/bin/cluster_start.sh worker 257 1"
+DESIRED_EXECSTART="ExecStart=$START_SCRIPT worker 257 1"
 
 # Check if the service file exists
 if [ -f "$SERVICE_FILE" ]; then
@@ -65,3 +67,15 @@ sudo systemctl daemon-reload
 sudo systemctl enable cluster.service
 
 echo "Cluster service configuration completed and enabled, but not started."
+
+# Desired content for the cluster_start.sh script
+read -r -d '' START_SCRIPT_CONTENT << 'EOL'
+#!/bin/bash
+
+# Set the working directory to /root/ceremonyclient/node/
+cd /root/ceremonyclient/node/
+
+# Capture the parent process ID (PPID) inside the script
+parent_process_id=$PPID
+
+# Get the role (master

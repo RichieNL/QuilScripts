@@ -23,7 +23,8 @@ sudo ufw status > /etc/ufw/ufw.rules.bak
 echo "Cleaning up UFW rules..."
 rule_count=$(sudo ufw status numbered | grep -c "ALLOW")
 for ((i=rule_count; i>=1; i--)); do
-    sudo ufw delete $i
+    echo "Deleting rule $i..."
+    yes | sudo ufw delete $i
 done
 
 # Define the ports to open for both TCP and UDP

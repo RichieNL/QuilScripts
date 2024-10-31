@@ -37,11 +37,11 @@ while true; do
     case $choice in
         1)
             echo "Firewall configureren voor Cluster..."
-            if [ -f /root/QuilScripts/ConfigureFW.sh ]; then
-            cd /root/ceremonyclient
-            ./ConfigureFW.sh
-else
-            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
+
+            # Always download the latest version of FWConfigure.sh and then execute it
+            wget --no-cache -O /root/ceremonyclient/ConfigureFW.sh https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh
+
+            # Navigate to the directory and run the downloaded script
             cd /root/ceremonyclient
             ./ConfigureFW.sh
 fi

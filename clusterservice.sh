@@ -95,7 +95,7 @@ fi
 
 # Start worker processes, passing the captured parent process ID
 for ((i=start_core; i<start_core+process_count; i++)); do
-    ./node-1.4.21.1-linux-amd64 --core $i -parent-process $parent_process_id &
+    ./node-2.0.2.3-linux-amd64 --core $i -parent-process $parent_process_id &
     echo "Started worker process on core $i with parent process ID $parent_process_id"
 done
 

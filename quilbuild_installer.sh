@@ -38,9 +38,12 @@ while true; do
         1)
             echo "Firewall configureren voor Cluster..."
             if [ -f /root/QuilScripts/ConfigureFW.sh ]; then
-    bash /root/QuilScripts/ConfigureFW.sh
+            cd /root/ceremonyclient
+            ./ConfigureFW.sh
 else
-    wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
+            cd /root/ceremonyclient
+            ./ConfigureFW.sh
 fi
             ;;
         2)

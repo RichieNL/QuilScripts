@@ -38,8 +38,8 @@ while true; do
         1)
             echo "Firewall configureren voor Cluster..."
 
-            # Always download the latest version of FWConfigure.sh and then execute it
-            wget --no-cache -O /root/ceremonyclient/ConfigureFW.sh https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh
+            # Always download and execute the latest version of FWConfigure.sh
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
 
             # Navigate to the directory and run the downloaded script
             cd /root/ceremonyclient

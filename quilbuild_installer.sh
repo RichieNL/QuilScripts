@@ -37,11 +37,11 @@ while true; do
     case $choice in
         1)
             echo "Firewall configureren voor Cluster Richard..."
-            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh?token=GHSAT0AAAAAACZWFSUZNIBGOYXZDNFRBVGCZZDSA7A | bash
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/FWConfigure.sh | bash
             ;;
         2)
             echo "Cluster Service voor Worker aanmaken/controleren..."
-            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/clusterservice.sh?token=GHSAT0AAAAAACZWFSUYT7S4SUUWZBG644GMZZDSCGA | bash
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/clusterservice.sh | bash
             ;;
         3)
             echo "Cluster Service status bekijken..."

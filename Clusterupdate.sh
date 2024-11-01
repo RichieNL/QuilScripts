@@ -64,26 +64,18 @@ fi
 # Versiecontrole en update van cluster_start script
 echo "Controleer of $CLUSTER_START_SCRIPT moet worden bijgewerkt..."
 
-# Haal de huidige versie op uit cluster_start.sh
-current_version=$(grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$CLUSTER_START_SCRIPT" | head -1)
+# Vervang alle bestaande versienummers in cluster_start.sh door de nieuwste versie
+sed -i "s/node-[0-9]\+\.[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?/${latest_version}/g" "$CLUSTER_START_SCRIPT"
+echo "Alle versienummers in $CLUSTER_START_SCRIPT zijn bijgewerkt naar versie $latest_version"
 
-# Vergelijk de versies
-if [[ "$latest_version" != "$current_version" ]]; then
-    echo "Nieuwere versie gedetecteerd in $CLUSTER_START_SCRIPT, bijwerken naar $latest_version"
-    sed -i "s/$current_version/$latest_version/g" "$CLUSTER_START_SCRIPT"
-    echo "$CLUSTER_START_SCRIPT bijgewerkt naar versie $latest_version"
-
-    # Voer git pull uit om de repository bij te werken
-    echo "Git-repository bijwerken voor de nieuwe versie..."
-    cd  ~/ceremonyclient
-    git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
-    git checkout main
-    git branch -D release
-    git pull
-    git checkout release
-    echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
-else
-    echo "$CLUSTER_START_SCRIPT is al up-to-date met de laatste versie of geen bestaande versie gevonden."
-fi
+# Voer git pull uit om de repository bij te werken
+echo "Git-repository bijwerken voor de nieuwe versie..."
+ cd  ~/ceremonyclient
+git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
+git checkout main
+git branch -D release
+git pull
+git checkout release
+echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
 
 echo "=== Update-script voltooid ==="

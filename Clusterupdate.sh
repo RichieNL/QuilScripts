@@ -45,6 +45,7 @@ echo "Te downloaden bestanden: $bestanden"
 
 # Controleer en download elk bestand in de lijst
 echo "Begin met downloaden van bestanden..."
+IFS=$'\n' # Zorgt ervoor dat elk bestand op een nieuwe regel wordt gelezen
 for bestand in $bestanden; do
     echo "Verwerken van bestand: $bestand"
     download_and_make_executable "$bestand"

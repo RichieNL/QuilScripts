@@ -14,41 +14,25 @@ latest_version=$(curl -s "$url" | grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]
 
 echo "Laatste versie gedetecteerd: $latest_version"
 
-# Functie om een bestand te downloaden, uitvoerbaar te maken, en de wijzigingsdatum te controleren
-check_and_update_file() {
+# Functie om een bestand te downloaden en uitvoerbaar te maken
+download_and_make_executable() {
     filename=$1
     remote_file="$url/$filename"
     local_file="$local_dir/$filename"
 
-    # Download header informatie voor de 'Last-Modified' datum van het remote bestand
-    remote_date=$(curl -sI "$remote_file" | grep -i "Last-Modified" | sed 's/Last-Modified: //i' | tr -d '\r')
-
-    # Als het bestand niet bestaat lokaal, download het
-    if [ ! -f "$local_file" ]; then
-        echo "Bestand $filename bestaat niet lokaal. Downloaden..."
-        curl -o "$local_file" "$remote_file"
-        chmod +x "$local_file"
-    else
-        # Huidige lokale bestanddatum opvragen
-        local_date=$(date -r "$local_file" "+%a, %d %b %Y %H:%M:%S %Z")
-
-        # Vergelijk data
-        if [[ "$remote_date" > "$local_date" ]]; then
-            echo "Nieuwere versie van $filename gevonden. Bijwerken..."
-            curl -o "$local_file" "$remote_file"
-            chmod +x "$local_file"
-        else
-            echo "$filename is al up-to-date."
-        fi
-    fi
+    # Download bestand en maak het uitvoerbaar
+    echo "Bestand $filename downloaden..."
+    curl -o "$local_file" "$remote_file"
+    chmod +x "$local_file"
+    echo "$filename is gedownload en uitvoerbaar gemaakt."
 }
 
-# Dynamisch ophalen van bestanden inclusief alle .sig bestanden
+# Dynamisch ophalen van alle bestanden inclusief .sig bestanden met de juiste versie
 bestanden=$(curl -s "$url" | grep -oP "node-${latest_version}-linux-amd64(\.dgst|\.dgst\.sig\.[0-9]+)")
 
-# Controleer elk bestand in de dynamisch gegenereerde lijst
+# Controleer en download elk bestand in de lijst
 for bestand in $bestanden; do
-    check_and_update_file "$bestand"
+    download_and_make_executable "$bestand"
 done
 
 # Versie-upgrade controle en update cluster_start script

@@ -75,8 +75,12 @@ if [[ "$latest_version" != "$current_version" ]]; then
 
     # Voer git pull uit om de repository bij te werken
     echo "Git-repository bijwerken voor de nieuwe versie..."
-    cd /root/ceremonyclient || exit
+    cd  ~/ceremonyclient
+    git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
+    git checkout main
+    git branch -D release
     git pull
+    git checkout release
     echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
 else
     echo "$CLUSTER_START_SCRIPT is al up-to-date met de laatste versie of geen bestaande versie gevonden."

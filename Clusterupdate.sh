@@ -61,11 +61,11 @@ else
     done
 fi
 
-# Versiecontrole en update van cluster_start script
+# Versiecontrole en update van cluster_start script, onafhankelijk van de node map
 echo "Controleer of $CLUSTER_START_SCRIPT moet worden bijgewerkt..."
 
-# Vervang alle bestaande versienummers in cluster_start.sh door de nieuwste versie
-sed -i "s/node-[0-9]\+\.[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?/${latest_version}/g" "$CLUSTER_START_SCRIPT"
+# Vervang alle bestaande versienummers in cluster_start.sh door het volledige nieuwste versiepatroon
+sed -i "s/node-[0-9]\+\.[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?-${OS_ARCH}/node-${latest_version}-${OS_ARCH}/g" "$CLUSTER_START_SCRIPT"
 echo "Alle versienummers in $CLUSTER_START_SCRIPT zijn bijgewerkt naar versie $latest_version"
 
 # Controleer of /root/ceremonyclient een geldige Git-repository is
@@ -87,4 +87,3 @@ else
 fi
 
 echo "=== Update-script voltooid ==="
-    

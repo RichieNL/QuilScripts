@@ -30,8 +30,12 @@ download_and_make_executable() {
     # Download bestand en maak het uitvoerbaar
     echo "Bezig met downloaden van $filename..."
     curl -o "$local_file" "$remote_file"
-    chmod +x "$local_file"
-    echo "$filename is gedownload en uitvoerbaar gemaakt."
+    if [ -f "$local_file" ]; then
+        chmod +x "$local_file"
+        echo "$filename is gedownload en uitvoerbaar gemaakt."
+    else
+        echo "Fout bij het downloaden van $filename. Bestand niet gevonden."
+    fi
 }
 
 # Dynamisch ophalen van alle bestanden inclusief .sig bestanden met de juiste versie
@@ -42,6 +46,7 @@ echo "Te downloaden bestanden: $bestanden"
 # Controleer en download elk bestand in de lijst
 echo "Begin met downloaden van bestanden..."
 for bestand in $bestanden; do
+    echo "Verwerken van bestand: $bestand"
     download_and_make_executable "$bestand"
 done
 echo "Alle bestanden zijn gedownload en uitvoerbaar gemaakt."
@@ -54,15 +59,19 @@ if [[ "$latest_version" > "$current_version" ]]; then
     sed -i "s/$current_version/$latest_version/g" "$cluster_start_script"
     echo "cluster_start.sh is bijgewerkt naar versie $latest_version"
 
-    # Voer git-commando's uit als de versie is bijgewerkt
-    echo "Git-repository bijwerken voor de nieuwe versie..."
-    cd /root/ceremonyclient
-    git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
-    git checkout main
-    git branch -D release
-    git pull
-    git checkout release
-    echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
+    # Controleer of het een geldige Git-repository is
+    if [ -d "/root/ceremonyclient/.git" ]; then
+        echo "Git-repository bijwerken voor de nieuwe versie..."
+        cd /root/ceremonyclient || exit
+        git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
+        git checkout main
+        git branch -D release
+        git pull
+        git checkout release
+        echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
+    else
+        echo "Fout: /root/ceremonyclient is geen geldige Git-repository."
+    fi
 else
     echo "cluster_start.sh is al up-to-date met de laatste versie."
 fi

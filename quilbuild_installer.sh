@@ -20,9 +20,10 @@ display_menu() {
     echo "Kies een optie:"
     echo "1. Firewall configureren voor Cluster"
     echo "2. Cluster Service voor Worker aanmaken/controleren"
-    echo "3. Cluster Service status bekijken"
-    echo "4. Token saldo bekijken"
-    echo "5. Afsluiten"
+    echo "3. Cluster updaten naar meest recente versie"
+    echo "4. Cluster Service status bekijken"
+    echo "5. Token saldo bekijken"
+    echo "6. Afsluiten"
 }
 
 # Hoofdloop om het menu actief te houden
@@ -31,7 +32,7 @@ while true; do
     display_menu
 
     # Lees de keuze van de gebruiker
-    read -p "Voer je keuze in [1-5]: " choice
+    read -p "Voer je keuze in [1-6]: " choice
 
     # Behandel de keuze van de gebruiker
     case $choice in
@@ -50,16 +51,20 @@ while true; do
             wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/clusterservice.sh | bash
             ;;
         3)
+            echo "Cluster updaten naar meest recente versie..."
+            wget --no-cache -O - https://raw.githubusercontent.com/RichieNL/QuilScripts/refs/heads/main/Clusterupdate.sh | bash
+            ;;
+        4)
             echo "Cluster Service status bekijken..."
             sudo journalctl -u cluster.service -f --no-hostname -o cat
             ;;
-        4)
+        5)
             echo "Token saldo bekijken..."
             cd /root/ceremonyclient/client || { echo "Fout bij het wijzigen van directory."; exit 1; }
             # Voer het commando uit en geef de output weer
             ./qclient-2.0.2.3-linux-amd64 token balance --config /root/ceremonyclient/node/.config
             ;;
-        5)
+        6)
             echo "Afsluiten..."
             exit 0
             ;;

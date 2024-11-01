@@ -68,11 +68,22 @@ echo "Controleer of $CLUSTER_START_SCRIPT moet worden bijgewerkt..."
 sed -i "s/node-[0-9]\+\.[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?/${latest_version}/g" "$CLUSTER_START_SCRIPT"
 echo "Alle versienummers in $CLUSTER_START_SCRIPT zijn bijgewerkt naar versie $latest_version"
 
-# Voer git pull uit om de repository bij te werken
-echo "Git-repository bijwerken voor de nieuwe versie..."
-cd  ~/ceremonyclient
-git pull
-git checkout release
-echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
+# Controleer of /root/ceremonyclient een geldige Git-repository is
+cd /root/ceremonyclient || exit
+if git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "Git-repository bijwerken voor de nieuwe versie..."
+    git pull
+    echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
+else
+    echo "Fout: /root/ceremonyclient is geen geldige Git-repository. Probeer opnieuw te initialiseren..."
+
+    # Herstel de repository
+    rm -rf .git  # Verwijder eventuele corrupte Git-gegevens
+    git init
+    git remote add origin https://github.com/QuilibriumNetwork/ceremonyclient.git
+    git fetch origin release
+    git checkout release
+    echo "Git-repository opnieuw geïnitialiseerd en bijgewerkt naar de laatste release."
+fi
 
 echo "=== Update-script voltooid ==="

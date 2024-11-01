@@ -70,10 +70,7 @@ echo "Alle versienummers in $CLUSTER_START_SCRIPT zijn bijgewerkt naar versie $l
 
 # Voer git pull uit om de repository bij te werken
 echo "Git-repository bijwerken voor de nieuwe versie..."
- cd  ~/ceremonyclient
-git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
-git checkout main
-git branch -D release
+cd  ~/ceremonyclient
 git pull
 git checkout release
 echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Target directory and file
-target_dir="/root/QuilScripts"
+target_dir="/root/quilscripts"
 target_file="${target_dir}/ConfigureFW.sh"
 
 # Ensure the target directory exists

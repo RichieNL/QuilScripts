@@ -10,7 +10,7 @@ local_dir="/root/ceremonyclient/node"
 cluster_start_script="/usr/local/bin/cluster_start.sh"
 
 echo "=== Start van het update-script ==="
-    
+
 # Ophalen van de laatste versie van linux-amd64 bestanden
 echo "Ophalen van de laatste versie van linux-amd64 bestanden..."
 latest_version=$(curl -s "$url" | grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=-linux-amd64)' | sort -V | tail -1)
@@ -21,33 +21,26 @@ echo "Verwijderen van oude bestanden in $local_dir..."
 rm -f "$local_dir"/node-*-linux-amd64*
 echo "Oude bestanden zijn verwijderd."
 
-# Functie om een bestand te downloaden en uitvoerbaar te maken
-download_and_make_executable() {
-    filename=$1
-    remote_file="$url/$filename"
-    local_file="$local_dir/$filename"
-
-    # Download bestand en maak het uitvoerbaar
-    echo "Bezig met downloaden van $filename..."
-    curl -o "$local_file" "$remote_file"
-    if [ -f "$local_file" ]; then
-        chmod +x "$local_file"
-        echo "$filename is gedownload en uitvoerbaar gemaakt."
-    else
-        echo "Fout bij het downloaden van $filename. Bestand niet gevonden."
-    fi
-}
-
-# Dynamisch ophalen van alle bestanden inclusief .sig bestanden met de juiste versie
+# Bestanden ophalen en opslaan in een array
 echo "Ophalen van de lijst met bestanden voor versie $latest_version..."
-bestanden=$(curl -s "$url" | grep -oP "node-${latest_version}-linux-amd64(\.dgst|\.dgst\.sig\.[0-9]+)")
+mapfile -t bestanden < <(curl -s "$url" | grep -oP "node-${latest_version}-linux-amd64(\.dgst|\.dgst\.sig\.[0-9]+)")
 
 # Controleer en download elk bestand in de lijst
 echo "Begin met downloaden van bestanden..."
-while read -r bestand; do
+for bestand in "${bestanden[@]}"; do
     echo "Verwerken van bestand: $bestand"
-    download_and_make_executable "$bestand"
-done <<< "$bestanden"
+    remote_file="$url/$bestand"
+    local_file="$local_dir/$bestand"
+
+    echo "Bezig met downloaden van $bestand..."
+    curl -o "$local_file" "$remote_file"
+    if [ -f "$local_file" ]; then
+        chmod +x "$local_file"
+        echo "$bestand is gedownload en uitvoerbaar gemaakt."
+    else
+        echo "Fout bij het downloaden van $bestand. Bestand niet gevonden."
+    fi
+done
 echo "Alle bestanden zijn gedownload en uitvoerbaar gemaakt."
 
 # Versie-upgrade controle en update cluster_start script

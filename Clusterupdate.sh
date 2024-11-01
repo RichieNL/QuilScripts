@@ -63,9 +63,12 @@ fi
 
 # Versiecontrole en update van cluster_start script
 echo "Controleer of $CLUSTER_START_SCRIPT moet worden bijgewerkt..."
-current_version=$(grep -oE 'node-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$CLUSTER_START_SCRIPT" | sort -V | tail -1)
 
-if [[ -n "$current_version" && "$latest_version" > "$current_version" ]]; then
+# Haal de huidige versie op uit cluster_start.sh
+current_version=$(grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$CLUSTER_START_SCRIPT" | head -1)
+
+# Vergelijk de versies
+if [[ "$latest_version" != "$current_version" ]]; then
     echo "Nieuwere versie gedetecteerd in $CLUSTER_START_SCRIPT, bijwerken naar $latest_version"
     sed -i "s/$current_version/$latest_version/g" "$CLUSTER_START_SCRIPT"
     echo "$CLUSTER_START_SCRIPT bijgewerkt naar versie $latest_version"

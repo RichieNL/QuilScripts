@@ -41,15 +41,13 @@ download_and_make_executable() {
 # Dynamisch ophalen van alle bestanden inclusief .sig bestanden met de juiste versie
 echo "Ophalen van de lijst met bestanden voor versie $latest_version..."
 bestanden=$(curl -s "$url" | grep -oP "node-${latest_version}-linux-amd64(\.dgst|\.dgst\.sig\.[0-9]+)")
-echo "Te downloaden bestanden: $bestanden"
 
 # Controleer en download elk bestand in de lijst
 echo "Begin met downloaden van bestanden..."
-IFS=$'\n' # Zorgt ervoor dat elk bestand op een nieuwe regel wordt gelezen
-for bestand in $bestanden; do
+while read -r bestand; do
     echo "Verwerken van bestand: $bestand"
     download_and_make_executable "$bestand"
-done
+done <<< "$bestanden"
 echo "Alle bestanden zijn gedownload en uitvoerbaar gemaakt."
 
 # Versie-upgrade controle en update cluster_start script
@@ -78,4 +76,3 @@ else
 fi
 
 echo "=== Update-script voltooid ==="
-    

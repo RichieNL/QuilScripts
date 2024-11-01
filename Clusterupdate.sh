@@ -2,10 +2,10 @@
 
 # Basis-URL voor de Quilibrium releases
 RELEASE_FILES_URL="https://releases.quilibrium.com/release"
+OS_ARCH="linux-amd64"
 
 # Lokale directory waar de bestanden worden opgeslagen
 DOWNLOAD_DIR="/root/ceremonyclient/node"
-OS_ARCH="linux-amd64"
 
 # Pad naar het cluster_start script
 CLUSTER_START_SCRIPT="/usr/local/bin/cluster_start.sh"
@@ -16,16 +16,21 @@ echo "=== Start van het update-script ==="
 mkdir -p "$DOWNLOAD_DIR"
 cd "$DOWNLOAD_DIR" || exit
 
-# Haal de lijst met bestanden op van de releasepagina
-RELEASE_FILES=$(curl -s "$RELEASE_FILES_URL" | grep -oE "node-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-${OS_ARCH}(\.dgst)?(\.sig\.[0-9]+)?")
+# Haal de nieuwste versie op van de releasepagina
+latest_version=$(curl -s "$RELEASE_FILES_URL" | grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(?=-linux-amd64)' | sort -V | tail -1)
+echo "Laatste versie gedetecteerd: $latest_version"
+
+# Haal de lijst met bestanden op van de releasepagina voor de gedetecteerde versie
+RELEASE_FILES=$(curl -s "$RELEASE_FILES_URL" | grep -oE "node-${latest_version}-${OS_ARCH}(\.dgst|\.dgst\.sig\.[0-9]+)?")
 
 # Download elk bestand in de lijst
 for file in $RELEASE_FILES; do
     echo "Bezig met downloaden van $file..."
-    if curl -L -o "$file" "$RELEASE_FILES_URL/$file" --fail --silent; then
+    file_url="$RELEASE_FILES_URL/$file"  # Bouw de volledige URL voor het bestand
+    if curl -L -o "$file" "$file_url" --fail --silent; then
         echo "Succesvol gedownload: $file"
         # Controleer of het bestand de hoofd-binary is (zonder .dgst of .sig suffix)
-        if [[ $file =~ ^node-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-${OS_ARCH}$ ]]; then
+        if [[ $file =~ ^node-${latest_version}-${OS_ARCH}$ ]]; then
             if chmod +x "$file"; then
                 echo "Bestand uitvoerbaar gemaakt: $file"
             else
@@ -33,14 +38,13 @@ for file in $RELEASE_FILES; do
             fi
         fi
     else
-        echo "❌ Fout bij het downloaden van $file"
+        echo "❌ Fout bij het downloaden van $file van $file_url"
     fi
 done
 
 # Versiecontrole en update van cluster_start script
 echo "Controleer of $CLUSTER_START_SCRIPT moet worden bijgewerkt..."
 current_version=$(grep -oE 'node-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' "$CLUSTER_START_SCRIPT" | sort -V | tail -1)
-latest_version=$(echo "$RELEASE_FILES" | grep -oE 'node-[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?' | sort -V | tail -1)
 
 if [[ "$latest_version" > "$current_version" ]]; then
     echo "Nieuwere versie gedetecteerd in $CLUSTER_START_SCRIPT, bijwerken naar $latest_version"

@@ -56,7 +56,7 @@ if [[ "$latest_version" > "$current_version" ]]; then
 
     # Voer git-commando's uit als de versie is bijgewerkt
     echo "Git-repository bijwerken voor de nieuwe versie..."
-    cd /root/ceremonyclient || exit
+    cd /root/ceremonyclient
     git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
     git checkout main
     git branch -D release

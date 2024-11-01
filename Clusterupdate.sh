@@ -27,7 +27,7 @@ if [ -z "$latest_version" ]; then
 fi
 
 # Haal de lijst met bestanden op van de releasepagina voor de gedetecteerde versie
-mapfile -t RELEASE_FILES < <(curl -s "$RELEASE_FILES_URL/release" | grep -oE "node-${latest_version}-${OS_ARCH}(\.dgst|\.sig\.[0-9]+)?")
+mapfile -t RELEASE_FILES < <(curl -s "$RELEASE_FILES_URL/release" | grep -oE "node-${latest_version}-${OS_ARCH}(\.dgst|\.dgst\.sig\.[0-9]+)?")
 
 # Controleer of er bestanden zijn gedetecteerd
 if [ ${#RELEASE_FILES[@]} -eq 0 ]; then
@@ -41,7 +41,7 @@ for file in "${RELEASE_FILES[@]}"; do
     file_url="${RELEASE_FILES_URL}/${file}"  # Bouw de volledige URL voor het bestand zonder /release/
     echo "Download URL: $file_url"  # Log de volledige URL voor controle
 
-    if curl -L -o "$file" "$file_url" --fail --silent -v; then
+    if curl -L -o "$file" "$file_url" --fail --silent; then
         echo "Succesvol gedownload: $file"
         # Controleer of het bestand de hoofd-binary is (zonder .dgst of .sig suffix)
         if [[ $file =~ ^node-${latest_version}-${OS_ARCH}$ ]]; then

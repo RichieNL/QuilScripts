@@ -40,12 +40,33 @@ sudo ufw status > $backup_path
 read -p "Enter the SSH port you wish to allow (default is 22): " ssh_port
 ssh_port=${ssh_port:-22}  # Default to 22 if no input is provided
 
+# Update SSH config if necessary
+ssh_config_file="/etc/ssh/sshd_config"
+if grep -q "^Port $ssh_port" "$ssh_config_file"; then
+    echo "SSH is already configured to use port $ssh_port."
+else
+    echo "Updating SSH configuration to use port $ssh_port..."
+    sudo sed -i "s/^#Port 22/Port $ssh_port/" "$ssh_config_file"
+    if ! grep -q "^Port $ssh_port" "$ssh_config_file"; then
+        echo "Port $ssh_port" | sudo tee -a "$ssh_config_file" > /dev/null
+    fi
+    echo "Restarting SSH service to apply changes..."
+    sudo systemctl restart sshd
+fi
+
 # Prompt for IP address to allow specific access
 read -p "Enter the IPv4 address you wish to allow for the port range 40000:40256: " ip_address
 
 # Validate IP address format
 if [[ ! $ip_address =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Invalid IP address format. Exiting script."
+    exit 1
+fi
+
+# Confirm cleanup of existing rules
+read -p "Are you sure you want to delete all existing UFW rules? (y/n): " confirm
+if [[ $confirm != [yY] ]]; then
+    echo "Aborting cleanup. Exiting script."
     exit 1
 fi
 
@@ -58,7 +79,7 @@ for ((i=rule_count; i>=1; i--)); do
 done
 
 # Define the ports to open for both TCP and UDP, including dynamic SSH port
-declare -a ports=("8336" "8316" "8317" "'${ssh_port}'")
+declare -a ports=("8336" "8316" "8317" "$ssh_port")
 
 # Open specified ports for both TCP and UDP for IPv4 only
 for port in "${ports[@]}"; do

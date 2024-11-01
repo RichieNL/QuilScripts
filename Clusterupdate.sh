@@ -73,19 +73,11 @@ if [[ "$latest_version" != "$current_version" ]]; then
     sed -i "s/$current_version/$latest_version/g" "$CLUSTER_START_SCRIPT"
     echo "$CLUSTER_START_SCRIPT bijgewerkt naar versie $latest_version"
 
-    # Controleer of het een geldige Git-repository is en werk bij
-    if [ -d "/root/ceremonyclient/.git" ]; then
-        echo "Git-repository bijwerken voor de nieuwe versie..."
-        cd /root/ceremonyclient || exit
-        git remote set-url origin https://github.com/QuilibriumNetwork/ceremonyclient.git
-        git checkout main
-        git branch -D release
-        git pull
-        git checkout release
-        echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
-    else
-        echo "Fout: /root/ceremonyclient is geen geldige Git-repository."
-    fi
+    # Voer git pull uit om de repository bij te werken
+    echo "Git-repository bijwerken voor de nieuwe versie..."
+    cd /root/ceremonyclient || exit
+    git pull
+    echo "Git-repository is succesvol bijgewerkt naar de nieuwe versie."
 else
     echo "$CLUSTER_START_SCRIPT is al up-to-date met de laatste versie of geen bestaande versie gevonden."
 fi

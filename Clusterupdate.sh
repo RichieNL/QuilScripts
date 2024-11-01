@@ -10,7 +10,7 @@ local_dir="/root/ceremonyclient/node"
 cluster_start_script="/usr/local/bin/cluster_start.sh"
 
 echo "=== Start van het update-script ==="
-
+    
 # Ophalen van de laatste versie van linux-amd64 bestanden
 echo "Ophalen van de laatste versie van linux-amd64 bestanden..."
 latest_version=$(curl -s "$url" | grep -oP 'node-\K[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(?=-linux-amd64)' | sort -V | tail -1)

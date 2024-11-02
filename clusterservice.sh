@@ -22,7 +22,7 @@ RestartKillSignal=SIGINT
 FinalKillSignal=SIGKILL
 TimeoutStopSec=30s
 User=root
-ExecStart=PLACEHOLDER_EXECSTART
+PLACEHOLDER_EXECSTART
 
 [Install]
 WantedBy=multi-user.target

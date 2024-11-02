@@ -88,14 +88,14 @@ echo "Parent Process ID: $parent_process_id"
 
 # If the role is 'master', start the master process without the --core flag
 if [ "$role" == "master" ]; then
-    ./node-2.0.2.3-linux-amd64 &
+    ./node-2.0.2.4-linux-amd64 &
     echo "Master process started without --core, with parent process ID $parent_process_id."
     sleep 2
 fi
 
 # Start worker processes, passing the captured parent process ID
 for ((i=start_core; i<start_core+process_count; i++)); do
-    ./node-2.0.2.3-linux-amd64 --core $i -parent-process $parent_process_id &
+    ./node-2.0.2.4-linux-amd64 --core $i -parent-process $parent_process_id &
     echo "Started worker process on core $i with parent process ID $parent_process_id"
 done
 

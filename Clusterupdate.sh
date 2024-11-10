@@ -18,13 +18,50 @@ echo "=== Start van het update-script ==="
 mkdir -p "$QCLIENT_DIR"
 cd "$QCLIENT_DIR" || exit
 
-# Ophalen en downloaden van de nieuwste versie van de qclient-component
-latest_qclient_version=$(curl -s "$RELEASE_FILES_URL/qclient-release" | grep -oP 'qclient-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(?=-linux-amd64)' | sort -V | tail -n 1)
-echo "Downloaden van qclient versie $latest_qclient_version..."
-curl -LO "$RELEASE_FILES_URL/qclient-${latest_qclient_version}-${OS_ARCH}"
-mv "qclient-${latest_qclient_version}-${OS_ARCH}" "qclient"
-chmod +x "qclient"
-echo "qclient bijgewerkt naar versie $latest_qclient_version"
+# Haal de nieuwste versie op van de releasepagina
+latest_version=$(curl -s "$RELEASE_FILES_URL/qclient-release" | grep -oP 'qclient-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(?=-linux-amd64)' | sort -V | tail -1)
+echo "Laatste versie gedetecteerd: $latest_version"
+
+# Controleer of de versie correct is opgehaald
+if [ -z "$latest_version" ]; then
+    echo "❌ Kon de laatste versie niet ophalen van $RELEASE_FILES_URL/qclient-release"
+    exit 1
+fi
+
+# Controleer of de nieuwste versie al gedownload is
+if ls qclient-${latest_version}-${OS_ARCH}* 1> /dev/null 2>&1; then
+    echo "Bestanden voor versie $latest_version zijn al aanwezig. Download wordt overgeslagen."
+else
+    # Haal de lijst met bestanden op van de releasepagina voor de gedetecteerde versie
+    mapfile -t RELEASE_FILES < <(curl -s "$RELEASE_FILES_URL/qclient-release" | grep -oE "qclient-${latest_version}-${OS_ARCH}(\.dgst|\.dgst\.sig\.[0-9]+)?")
+
+    # Controleer of er bestanden zijn gedetecteerd
+    if [ ${#RELEASE_FILES[@]} -eq 0 ]; then
+        echo "❌ Geen bestanden gevonden voor versie $latest_version op $RELEASE_FILES_URL/release"
+        exit 1
+    fi
+
+    # Download elk bestand in de lijst zonder /release/ in de download-URL
+    for file in "${RELEASE_FILES[@]}"; do
+        echo "Bezig met downloaden van $file..."
+        file_url="${RELEASE_FILES_URL}/${file}"  # Bouw de volledige URL voor het bestand zonder /release/
+        echo "Download URL: $file_url"  # Log de volledige URL voor controle
+
+        if curl -L -o "$file" "$file_url" --fail --silent; then
+            echo "Succesvol gedownload: $file"
+            # Controleer of het bestand de hoofd-binary is (zonder .dgst of .sig suffix)
+            if [[ $file =~ ^qclient-${latest_version}-${OS_ARCH}$ ]]; then
+                if chmod +x "$file"; then
+                    echo "Bestand uitvoerbaar gemaakt: $file"
+                else
+                    echo "❌ Fout bij het uitvoerbaar maken van $file"
+                fi
+            fi
+        else
+            echo "❌ Fout bij het downloaden van $file van $file_url"
+        fi
+    done
+fi
 
 # Controleer of de downloadmap bestaat en ga naar de downloadmap
 mkdir -p "$DOWNLOAD_DIR"

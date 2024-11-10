@@ -3,6 +3,8 @@
 # Basis-URL voor de Quilibrium releases zonder /release/
 RELEASE_FILES_URL="https://releases.quilibrium.com"
 OS_ARCH="linux-amd64"
+# Qclient map
+QCLIENT_DIR="/root/ceremonyclient/client"
 
 # Lokale directory waar de bestanden worden opgeslagen
 DOWNLOAD_DIR="/root/ceremonyclient/node"
@@ -11,6 +13,18 @@ DOWNLOAD_DIR="/root/ceremonyclient/node"
 CLUSTER_START_SCRIPT="/usr/local/bin/cluster_start.sh"
 
 echo "=== Start van het update-script ==="
+
+# Creëer de downloadmap voor qclient als deze niet bestaat
+mkdir -p "$QCLIENT_DIR"
+cd "$QCLIENT_DIR" || exit
+
+# Ophalen en downloaden van de nieuwste versie van de qclient-component
+latest_qclient_version=$(curl -s "$RELEASE_FILES_URL/qclient-release" | grep -oP 'qclient-\K[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?(?=-linux-amd64)' | sort -V | tail -n 1)
+echo "Downloaden van qclient versie $latest_qclient_version..."
+curl -LO "$RELEASE_FILES_URL/qclient-${latest_qclient_version}-${OS_ARCH}"
+mv "qclient-${latest_qclient_version}-${OS_ARCH}" "qclient"
+chmod +x "qclient"
+echo "qclient bijgewerkt naar versie $latest_qclient_version"
 
 # Controleer of de downloadmap bestaat en ga naar de downloadmap
 mkdir -p "$DOWNLOAD_DIR"
